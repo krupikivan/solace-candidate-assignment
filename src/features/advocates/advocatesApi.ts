@@ -17,9 +17,9 @@ export interface PaginatedAdvocatesResponse {
 }
 
 export const advocatesApi = {
-  getAdvocates: async (page: number = 1, limit: number = 10): Promise<PaginatedAdvocatesResponse> => {
+  getAdvocates: async (page: number = 1, limit: number = 10, search?: string): Promise<PaginatedAdvocatesResponse> => {
     const response = await apiClient.get<PaginatedAdvocatesResponse>('/advocates', {
-      params: { page, limit },
+      params: { page, limit, search },
     });
     return response.data;
   },

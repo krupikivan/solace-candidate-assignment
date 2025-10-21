@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { fetchAdvocates, setPage } from "@/features/advocates/advocatesSlice";
+import { fetchAdvocates, searchAdvocates, setPage } from "@/features/advocates/advocatesSlice";
 import AdvocatesTable from "@/components/AdvocatesTable";
 import SearchBar from "@/components/SearchBar";
 import Loading from "@/components/Loading";
@@ -11,17 +11,22 @@ import Error from "@/components/Error";
 export default function Home() {
   const dispatch = useAppDispatch();
   const {
-    filteredAdvocates,
+    advocates,
     loading,
     error,
     currentPage,
     totalPages,
-    total
+    total,
+    searchTerm
   } = useAppSelector((state) => state.advocates);
 
   useEffect(() => {
-    dispatch(fetchAdvocates(currentPage));
-  }, [dispatch, currentPage]);
+    if (searchTerm) {
+      dispatch(searchAdvocates({ search: searchTerm, page: currentPage }));
+    } else {
+      dispatch(fetchAdvocates(currentPage));
+    }
+  }, [dispatch, currentPage, searchTerm]);
 
   const handlePageChange = useCallback((page: number) => {
     dispatch(setPage(page));
@@ -44,7 +49,7 @@ export default function Home() {
       {error && <Error message={error} />}
       {!loading && !error && (
         <AdvocatesTable
-          advocates={filteredAdvocates}
+          advocates={advocates}
           currentPage={currentPage}
           totalPages={totalPages}
           total={total}
