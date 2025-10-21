@@ -1,47 +1,58 @@
-'use client';
+"use client";
 
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { searchAdvocates, fetchAdvocates, setSearchTerm } from '@/features/advocates/advocatesSlice';
-import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import {
+  setSearchTerm,
+  setPage,
+} from "@/features/advocates/advocatesSlice";
+import { useEffect, useState, useRef } from "react";
 
 export default function SearchBar() {
   const dispatch = useAppDispatch();
   const searchTerm = useAppSelector((state) => state.advocates.searchTerm);
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+  const isInitialMount = useRef(true);
 
   // Debounce search
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     const timer = setTimeout(() => {
-      if (localSearchTerm.trim()) {
-        dispatch(searchAdvocates({ search: localSearchTerm, page: 1 }));
-      } else if (localSearchTerm === '') {
-        dispatch(fetchAdvocates(1));
-      }
       dispatch(setSearchTerm(localSearchTerm));
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [localSearchTerm, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localSearchTerm]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalSearchTerm(e.target.value);
   };
 
   const handleReset = () => {
-    setLocalSearchTerm('');
-    dispatch(setSearchTerm(''));
-    dispatch(fetchAdvocates(1));
+    setLocalSearchTerm("");
+    dispatch(setSearchTerm(""));
+    dispatch(setPage(1));
   };
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
       <div className="mb-4">
-        <label htmlFor="advocate-search" className="block text-solace-dark font-semibold text-lg mb-2">
+        <label
+          htmlFor="advocate-search"
+          className="block text-solace-dark font-semibold text-lg mb-2"
+        >
           Search Advocates
         </label>
         {searchTerm && (
           <p className="text-sm text-solace-gray-600">
-            Searching for: <span id="search-term" className="font-medium text-solace-blue">{searchTerm}</span>
+            Searching for:{" "}
+            <span id="search-term" className="font-medium text-solace-blue">
+              {searchTerm}
+            </span>
           </p>
         )}
       </div>

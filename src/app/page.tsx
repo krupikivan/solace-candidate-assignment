@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { fetchAdvocates, searchAdvocates, setPage } from "@/features/advocates/advocatesSlice";
+import {
+  fetchAdvocates,
+  searchAdvocates,
+  setPage,
+} from "@/features/advocates/advocatesSlice";
 import AdvocatesTable from "@/components/AdvocatesTable";
 import SearchBar from "@/components/SearchBar";
 import Loading from "@/components/Loading";
@@ -17,8 +21,10 @@ export default function Home() {
     currentPage,
     totalPages,
     total,
-    searchTerm
+    searchTerm,
   } = useAppSelector((state) => state.advocates);
+
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
     if (searchTerm) {
@@ -26,11 +32,15 @@ export default function Home() {
     } else {
       dispatch(fetchAdvocates(currentPage));
     }
-  }, [dispatch, currentPage, searchTerm]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, currentPage]);
 
-  const handlePageChange = useCallback((page: number) => {
-    dispatch(setPage(page));
-  }, [dispatch]);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      dispatch(setPage(page));
+    },
+    [dispatch]
+  );
 
   return (
     <div>
