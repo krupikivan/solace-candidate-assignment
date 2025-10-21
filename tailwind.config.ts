@@ -10,9 +10,12 @@ const config: Config = {
     extend: {
       colors: {
         solace: {
-          blue: '#4d65ff',
-          'blue-dark': '#3d4fcc',
-          'blue-light': '#6d85ff',
+          blue: '#265b4e',
+          'blue-dark': '#1e4a3e',
+          'blue-light': '#366b5e',
+          secondary: '#d7a13b',
+          'secondary-dark': '#b8862f',
+          'secondary-light': '#e0b158',
           dark: '#1f2937',
           gray: {
             50: '#f9fafb',
