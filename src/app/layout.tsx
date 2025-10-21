@@ -17,8 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <StoreProvider>{children}</StoreProvider>
+      <body className={`${inter.className} bg-solace-gray-50 min-h-screen`}>
+        <StoreProvider>
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {children}
+          </main>
+        </StoreProvider>
       </body>
     </html>
   );
