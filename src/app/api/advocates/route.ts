@@ -1,12 +1,12 @@
-import db from "../../../db";
-import { advocates } from "../../../db/schema";
-import { advocateData } from "../../../db/seed/advocates";
+import { advocatesController } from "./controller";
+import { NextRequest } from "next/server";
 
-export async function GET() {
-  // Uncomment this line to use a database
-  // const data = await db.select().from(advocates);
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "10");
 
-  const data = advocateData;
+  const result = await advocatesController.getAdvocates(page, limit);
 
-  return Response.json({ data });
+  return Response.json(result);
 }

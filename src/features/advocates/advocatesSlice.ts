@@ -8,6 +8,10 @@ interface AdvocatesState {
   searchTerm: string;
   loading: boolean;
   error: string | null;
+  currentPage: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
 }
 
 const initialState: AdvocatesState = {
@@ -16,14 +20,18 @@ const initialState: AdvocatesState = {
   searchTerm: '',
   loading: false,
   error: null,
+  currentPage: 1,
+  pageSize: 10,
+  total: 0,
+  totalPages: 0,
 };
 
 // Async thunk to fetch advocates
 export const fetchAdvocates = createAsyncThunk(
   'advocates/fetchAdvocates',
-  async () => {
-    const data = await advocatesApi.getAdvocates();
-    return data;
+  async (page: number = 1) => {
+    const response = await advocatesApi.getAdvocates(page, 10);
+    return response;
   }
 );
 
@@ -54,6 +62,9 @@ const advocatesSlice = createSlice({
       state.searchTerm = '';
       state.filteredAdvocates = state.advocates;
     },
+    setPage: (state, action: PayloadAction<number>) => {
+      state.currentPage = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -63,8 +74,12 @@ const advocatesSlice = createSlice({
       })
       .addCase(fetchAdvocates.fulfilled, (state, action) => {
         state.loading = false;
-        state.advocates = action.payload;
-        state.filteredAdvocates = action.payload;
+        state.advocates = action.payload.data;
+        state.filteredAdvocates = action.payload.data;
+        state.currentPage = action.payload.page;
+        state.pageSize = action.payload.limit;
+        state.total = action.payload.total;
+        state.totalPages = action.payload.totalPages;
       })
       .addCase(fetchAdvocates.rejected, (state, action) => {
         state.loading = false;
@@ -73,5 +88,5 @@ const advocatesSlice = createSlice({
   },
 });
 
-export const { setSearchTerm, resetSearch } = advocatesSlice.actions;
+export const { setSearchTerm, resetSearch, setPage } = advocatesSlice.actions;
 export default advocatesSlice.reducer;

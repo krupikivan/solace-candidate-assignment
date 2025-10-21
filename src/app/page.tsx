@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { fetchAdvocates } from "@/features/advocates/advocatesSlice";
+import { fetchAdvocates, setPage } from "@/features/advocates/advocatesSlice";
 import AdvocatesTable from "@/components/AdvocatesTable";
 import SearchBar from "@/components/SearchBar";
 import Loading from "@/components/Loading";
@@ -10,12 +10,21 @@ import Error from "@/components/Error";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { filteredAdvocates, loading, error } = useAppSelector(
-    (state) => state.advocates
-  );
+  const {
+    filteredAdvocates,
+    loading,
+    error,
+    currentPage,
+    totalPages,
+    total
+  } = useAppSelector((state) => state.advocates);
 
   useEffect(() => {
-    dispatch(fetchAdvocates());
+    dispatch(fetchAdvocates(currentPage));
+  }, [dispatch, currentPage]);
+
+  const handlePageChange = useCallback((page: number) => {
+    dispatch(setPage(page));
   }, [dispatch]);
 
   return (
@@ -33,7 +42,15 @@ export default function Home() {
 
       {loading && <Loading />}
       {error && <Error message={error} />}
-      {!loading && !error && <AdvocatesTable advocates={filteredAdvocates} />}
+      {!loading && !error && (
+        <AdvocatesTable
+          advocates={filteredAdvocates}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          total={total}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }
