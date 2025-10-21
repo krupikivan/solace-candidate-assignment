@@ -10,13 +10,13 @@ interface PaginatedResponse {
 }
 
 export class AdvocatesController {
-  async getAdvocates(page?: number, limit?: number): Promise<PaginatedResponse> {
+  async getAdvocates(page?: number, limit?: number, search?: string): Promise<PaginatedResponse> {
     // Validate and set defaults
     const validatedPage = Math.max(1, page || 1);
     const validatedLimit = Math.max(1, Math.min(100, limit || 10)); // Max 100 per page
 
     // Get data from service
-    const result = await advocatesService.getAdvocates(validatedPage, validatedLimit);
+    const result = await advocatesService.getAdvocates(validatedPage, validatedLimit, search);
 
     // Calculate total pages
     const totalPages = Math.ceil(result.total / validatedLimit);
